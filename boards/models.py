@@ -18,8 +18,6 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.subject
-    
-    # MUST FIX THE STR REFERENCE TO THESE TWO MODELS
 
 
 class Post(models.Model):
@@ -29,6 +27,3 @@ class Post(models.Model):
     updated_at = models.DateTimeField(null=True)
     created_by = models.ForeignKey(User, related_name='posts_created', on_delete=models.CASCADE)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return self.topic
