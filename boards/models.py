@@ -6,6 +6,12 @@ from django.utils.html import mark_safe
 from markdown import markdown
 
 
+# Several difficulties navigating from model to model, still 
+# tricky. Forgetting that 'related_name' exists on model FK
+# and is constantly available. 
+# -> And I'll have to go through DB design again
+
+
 class Board(models.Model):
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=100)
@@ -55,7 +61,6 @@ class Post(models.Model):
     topic = models.ForeignKey(Topic, related_name='posts', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(null=True)
-    # Work out the details of related names and how to navigate through models after finish
     created_by = models.ForeignKey(User, related_name='posts_created', on_delete=models.CASCADE)
     updated_by = models.ForeignKey(User, null=True, related_name='+', on_delete=models.CASCADE)
 
