@@ -16,12 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import path, re_path
 from accounts import views as accounts_views
 from boards import views
 
 
 urlpatterns = [
+    re_path(r'^generate/$', views.GenerateRandomUserView.as_view(), name='generate'),
+    re_path(r'^$', views.UsersListView.as_view(), name='users_list'),
     path('', views.BoardListView.as_view(), name='home'),
     path('admin/', admin.site.urls),
     path('signup/', accounts_views.signup, name='signup'),

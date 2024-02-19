@@ -1,12 +1,18 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.db.models import Count
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView, UpdateView, FormView
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+
 from .models import Board, User, Topic, Post
-from .forms import NewTopicForm, PostForm
+from .forms import NewTopicForm, PostForm, GenerateRandomUserForm
+from .tasks import create_random_user_accounts
+
+from django.contrib.auth.models import User
 
 
 class BoardListView(ListView):
@@ -116,3 +122,23 @@ class PostUpdateView(UpdateView):
         post.updated_at = timezone.now()
         post.save()
         return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
+    
+
+
+class UsersListView(ListView):
+    template_name = 'users_list.html'
+    model = User
+
+
+
+class GenerateRandomUserView(FormView):
+    template_name = 'generate_random_users.html'
+    form_class = GenerateRandomUserForm
+
+    def form_valid(self, form):
+        total = form.cleaned_data.get('total')
+        print('\n\n###Before_delay\n\n')
+        create_random_user_accounts.delay(total)
+        print('\n\n###After_delay\n\n')
+        messages.success(self.request, 'We are generating your random users! Wait a moment and refresh this page.')
+        return redirect('users_list')
